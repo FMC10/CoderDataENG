@@ -1,0 +1,32 @@
+import requests
+import json
+
+def extraer_datos(url):
+    response = requests.get(url)
+    data = json.loads(response.text)
+    return data
+
+def guardar_en_json(datos):
+    with open("bebidas.json", "w") as archivo:
+        json.dump(datos, archivo, indent=4)
+
+def main():
+    url = "https://www.thecocktaildb.com/api/json/v1/1/search.php?f=a"
+    datos = extraer_datos(url)
+
+    if datos['drinks']:
+        bebidas = []
+        for drink in datos['drinks']:
+            nombre = drink['strDrink']
+            if nombre.startswith('A') or nombre.startswith('a'):
+                instrucciones = drink['strInstructions']
+                bebida = {'Nombre': nombre, 'Instrucciones': instrucciones}
+                bebidas.append(bebida)
+
+        guardar_en_json(bebidas)
+        print("Datos guardados en bebidas.json")
+    else:
+        print("No se encontraron bebidas que comiencen con la letra 'a'.")
+
+if __name__ == "__main__":
+    main()
